@@ -17,6 +17,7 @@ import {
 } from "../../utils/format";
 import { rpc, TransactionBuilder } from "@stellar/stellar-sdk";
 import { RPC_URL, NETWORK_PASSPHRASE } from "../../constants";
+import SkeletonRow, { FREELANCER_COLUMNS } from "../../components/SkeletonRow";
 
 const server = new rpc.Server(RPC_URL);
 
@@ -641,17 +642,9 @@ export default function FreelancerPage() {
                     </thead>
                     <tbody className="divide-y divide-surface-dim">
                       {loadingInvoices ? (
-                        <tr>
-                          <td
-                            colSpan={6}
-                            className="px-6 py-14 text-center text-on-surface-variant italic"
-                          >
-                            <span className="flex items-center justify-center gap-2">
-                              <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                              Loading invoices from Stellar…
-                            </span>
-                          </td>
-                        </tr>
+                        Array.from({ length: 5 }).map((_, i) => (
+                          <SkeletonRow key={i} columns={FREELANCER_COLUMNS} />
+                        ))
                       ) : invoices.length === 0 ? (
                         <tr>
                           <td

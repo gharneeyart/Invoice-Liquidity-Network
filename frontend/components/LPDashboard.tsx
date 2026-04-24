@@ -5,6 +5,7 @@ import { useWallet } from "../context/WalletContext";
 import { useToast } from "../context/ToastContext";
 import TokenSelector, { TokenAmount } from "./TokenSelector";
 import { useApprovedTokens } from "../hooks/useApprovedTokens";
+import SkeletonRow, { LP_DISCOVERY_COLUMNS } from "./SkeletonRow";
 import {
   buildApproveTokenTransaction,
   claimDefault,
@@ -21,8 +22,11 @@ import RiskBadge from "./RiskBadge";
 import LPPortfolio from "./LPPortfolio";
 import { RISK_SORT_ORDER } from "../utils/risk";
 
+
 type Tab = "discovery" | "my-funded" | "watchlist";
 type FundingStep = "approve" | "fund";
+
+
 
 export default function LPDashboard() {
   const { address, connect, signTx } = useWallet();
@@ -77,7 +81,6 @@ export default function LPDashboard() {
     return () => clearTimeout(timer);
   }, [fetchData]);
 
-  // Fetch payer scores in batch whenever invoices change
   const discoveryInvoicesList = invoices.filter(i => i.status === "Pending");
   const { scores: payerScores, risks: payerRisks } = usePayerScores(discoveryInvoicesList);
 
@@ -246,8 +249,6 @@ export default function LPDashboard() {
       const watchItem = watchlist.find(w => w.id === i.id.toString());
       return { ...i, watchAddedAt: watchItem?.addedAt || 0 };
     });
-  // If we are in watchlist, we probably want to sort by watchAddedAt descending if the user hasn't toggled sorting.
-  // We'll keep it simple and just use the same sortedInvoices logic.
 
   const toggleSort = (key: keyof Invoice | "risk" | "yield") => {
     if (sortKey === key) {
@@ -355,11 +356,9 @@ export default function LPDashboard() {
           </thead>
           <tbody className="divide-y divide-surface-dim">
             {loading ? (
-              <tr>
-                <td colSpan={8} className="px-6 py-12 text-center text-on-surface-variant italic">
-                  Loading invoices from Stellar...
-                </td>
-              </tr>
+              Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonRow key={i} columns={LP_DISCOVERY_COLUMNS} />
+              ))
             ) : (activeTab === "discovery" ? discoveryInvoices : watchlistInvoices).length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-6 py-12 text-center text-on-surface-variant italic">

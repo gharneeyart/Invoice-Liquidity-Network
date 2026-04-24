@@ -308,6 +308,9 @@ export default function PayerDashboard() {
   const sortedInvoices = [...myInvoices].sort((a, b) => {
     const av = a[sortKey] as string | number | bigint | undefined;
     const bv = b[sortKey] as string | number | bigint | undefined;
+    if (av === undefined && bv === undefined) return 0;
+    if (av === undefined) return 1;
+    if (bv === undefined) return -1;
     if (av < bv) return sortOrder === "asc" ? -1 : 1;
     if (av > bv) return sortOrder === "asc" ? 1 : -1;
     return 0;
